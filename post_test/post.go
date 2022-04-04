@@ -21,7 +21,7 @@ func main() {
 	if err = sc.Publish("nw", dataFromFile); err != nil {
 		log.Println(err.Error())
 	} else {
-		println("Success")
+		log.Println("Success")
 	}
 
 }
