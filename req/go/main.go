@@ -15,6 +15,7 @@ import (
 	memorycache "github.com/maxchagin/go-memorycache-example"
 	"github.com/nats-io/nats.go"
 	"github.com/nats-io/stan.go"
+	validator "gopkg.in/go-playground/validator.v9"
 )
 
 type Service struct {
@@ -105,6 +106,12 @@ func (service *Service) msgHandler(m *stan.Msg) {
 		return
 	}
 
+	v := validator.New()
+	err = v.Struct(obj)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 	service.Ch.Set(obj.OrderUid, obj, 0)
 
 	tx, err := service.Db.Begin()
