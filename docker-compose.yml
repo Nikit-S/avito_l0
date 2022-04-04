@@ -1,3 +1,4 @@
+version: "3"
 services:
 
   db:
@@ -17,6 +18,10 @@ services:
     env_file: .env
     ports:
       - "8090:8090"
+    restart: always
+    depends_on:
+      - "nats"
+      - "db"
 
   nats:
     image: nats-streaming

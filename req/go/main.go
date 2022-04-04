@@ -55,7 +55,7 @@ func (service *Service) orderHandler(w http.ResponseWriter, r *http.Request) {
 		//var err error
 		order_uid := r.PostFormValue("order_uid")
 		v, found := (service.Ch.Get(order_uid))
-		log.Println(found)
+		//log.Println(found)
 		if found == false {
 			fmt.Fprintf(w, "DB:\n")
 			var ret Model
@@ -67,7 +67,6 @@ func (service *Service) orderHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			err = service.SelectItems(&ret)
-
 			if err != nil {
 				return
 			}
@@ -99,14 +98,12 @@ func (service *Service) orderHandler(w http.ResponseWriter, r *http.Request) {
 
 func (service *Service) msgHandler(m *stan.Msg) {
 
-	fmt.Printf("Received a message: %s\n", string(m.Data))
 	var obj Model
 	err := json.Unmarshal(m.Data, &obj)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	log.Println("Данные из NATS-streaming получены!")
 
 	service.Ch.Set(obj.OrderUid, obj, 0)
 
@@ -127,7 +124,6 @@ func (service *Service) msgHandler(m *stan.Msg) {
 		obj.Delivery.Region,
 		obj.Delivery.Email,
 	).Scan(&delid)
-	//log.Println(delid)
 	_, err = tx.Exec(`INSERT INTO public.orders (order_uid,track_number,entry,delivery,payment,items,locale,internal_signature,customer_id,delivery_service,shardkey,sm_id,date_created,oof_shard)
 	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14);`,
 		obj.OrderUid,
